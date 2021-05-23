@@ -1,51 +1,36 @@
-from PySide2.QtCore import QRunnable, Slot
-from PySide2.QtGui import QStandardItem
+import os
 import helpers
+import logging
+import datetime
+import vars
+import json
+import jsonlines
 
 
-class EvtxLoader(QRunnable):
-    def __init__(self, file_path, window):
-        super().__init__()
-        self.window = window
+class EvtxLoader:
+    def __init__(self, file_path):
         self.file_path = file_path
 
-    @Slot()  # QtCore.Slot
-    def run(self):
+        self.logger = logging.getLogger('evtx-hunter')
+        self.logger.setLevel(logging.DEBUG)
+
+    def load_evtx_files(self):
         evtx_filenames = helpers.get_recursive_filenames(self.file_path, ".evtx")
         total_events = 0
 
         for filename in evtx_filenames:
-            for xml_event in helpers.get_events(filename):
-                json_event = helpers.convert_xml_event_to_json(xml_event)
-                total_events += 1
+            self.logger.info("processing " + filename)
 
-                row_content = dict()
+            ts = datetime.datetime.now().timestamp()
+            output_filename = vars.TMP_DIR + str(ts) + ".json"
 
-                for k in json_event.keys():
+            # Convert evtx file to JSON
+            os.system(vars.EXTERNAL_DIR + "evtx_dump-v0.7.2.exe -o jsonl \"" + filename + "\" -f "
+                      + output_filename)
 
-                    if not self.window.fieldListModel.findItems(k):
-                        item = QStandardItem(k)
-                        item.setCheckable(True)
-                        self.window.fieldListModel.appendRow(item)
+            with jsonlines.open(output_filename, "r") as reader:
+                for obj in reader:
+                    print(obj["Event"]["System"]["Computer"])
+                    total_events += 1
 
-                if "UtcTime" in json_event.keys():
-                    row_content["UtcTime"] = json_event["UtcTime"]
-                else:
-                    row_content["UtcTime"] = "N/A"
-
-                if "ID" in json_event.keys():
-                    row_content["event_id"] = json_event["ID"]
-                else:
-                    row_content["event_id"] = "N/A"
-
-                if "Image" in json_event.keys():
-                    row_content["Image"] = json_event["Image"]
-                else:
-                    row_content["Image"] = "N/A"
-
-                if "UtcTime" in json_event.keys():
-                    self.window.eventTableModel.insertRows(self.window.eventTableModel.rowCount())
-
-                    self.window.eventTableModel.setData(self.window.eventTableModel.index(self.window.eventTableModel.rowCount() - 1, self.window.eventTableModel.column_names.index("event_id")), row_content["event_id"])
-                    self.window.eventTableModel.setData(self.window.eventTableModel.index(self.window.eventTableModel.rowCount() - 1, self.window.eventTableModel.column_names.index("UtcTime")), row_content["UtcTime"])
-                    self.window.eventTableModel.setData(self.window.eventTableModel.index(self.window.eventTableModel.rowCount() - 1, self.window.eventTableModel.column_names.index("Image")), row_content["Image"])
+            self.logger.info("loaded " + str(total_events) + " events")

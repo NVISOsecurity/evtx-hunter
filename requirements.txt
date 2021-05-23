@@ -1,7 +1,5 @@
-python-evtx~=0.7.4
 pandas
 numpy
 matplotlib
 plotly~=4.14.3
-lxml
-pyside2
+jsonlines
