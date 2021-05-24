@@ -23,11 +23,14 @@ def create_filename_summary():
         data['events'].append(total_events)
 
     df = pd.DataFrame(data, columns=data.keys())
+    df.sort_values(by=['events'], inplace=True, ascending=False)
+
     table = dash_table.DataTable(
         id='filename_summary_table',
         columns=[{"name": i, "id": i} for i in df.columns],
         data=df.to_dict('records'),
-        style_cell={'textAlign': 'left'}
+        style_cell={'textAlign': 'left'},
+        page_size=20
     )
 
     return table
@@ -52,17 +55,18 @@ def create_event_summary(event_channel):
         else:
             event_summary_dict[event_id] += 1
 
-    sorted_dict = helpers.utils.sort_dict(event_summary_dict, reverse=True)
-
-    data['event_id'] = sorted_dict.keys()
-    data['events'] = sorted_dict.values()
+    data['event_id'] = event_summary_dict.keys()
+    data['events'] = event_summary_dict.values()
 
     df = pd.DataFrame(data, columns=data.keys())
+    df.sort_values(by=['events'], inplace=True, ascending=False)
+
     table = dash_table.DataTable(
         id='event_summary_table_' + hashlib.md5(event_channel.encode()).hexdigest(),
         columns=[{"name": i, "id": i} for i in df.columns],
         data=df.to_dict('records'),
-        style_cell={'textAlign': 'left'}
+        style_cell={'textAlign': 'left'},
+        page_size=20
     )
 
     return table

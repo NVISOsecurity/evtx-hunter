@@ -25,6 +25,7 @@ def main():
 
     external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
     vars.DASH_APP = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+    vars.DASH_APP.title = "evtx-hunter"
 
     utils.remove_all_tmp_json_files()
     evtxloader = EvtxLoader(args.evtx)
@@ -41,10 +42,11 @@ def main():
     ]
 
     for event_channel in event_channels:
-        event_summary_table = table.create_event_summary(event_channel)
+        if event_channel is not None:
+            event_summary_table = table.create_event_summary(event_channel)
 
-        children.append(html.H3(children=event_channel))
-        children.append(event_summary_table)
+            children.append(html.H3(children=event_channel))
+            children.append(event_summary_table)
 
     vars.DASH_APP.layout = html.Div(children=children,
                                     style={'width': '80%', 'margin': 'auto'})
