@@ -1,8 +1,24 @@
 import os
 import glob
 import logging
-
+import jsonlines
 import vars
+
+
+def retrieve_all_events():
+    for filename in os.listdir(vars.TMP_DIR):
+        f = os.path.join(vars.TMP_DIR, filename)
+        with jsonlines.open(f) as reader:
+            for item in reader:
+                yield item
+
+
+def get_all_event_channels():
+    event_channels = set()
+    for item in retrieve_all_events():
+        event_channels.add(item["Event"]["System"]["Channel"])
+
+    return list(event_channels)
 
 
 def get_recursive_filenames(path, file_suffix):
@@ -41,3 +57,8 @@ def setup_logger():
     logger.addHandler(ch)
 
     return logger
+
+
+def sort_dict(_dict, reverse=False):
+    event_summary_list = sorted(_dict.items(), key=lambda x: x[1], reverse=reverse)
+    return dict(event_summary_list)
