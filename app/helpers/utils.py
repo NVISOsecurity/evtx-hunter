@@ -4,6 +4,7 @@ import logging
 import jsonlines
 import vars
 import json
+import pandas as pd
 
 
 def retrieve_all_events():
@@ -13,10 +14,25 @@ def retrieve_all_events():
                 yield item
 
 
+def get_description_for_event_id(event_id):
+    event_id = int(event_id)
+    description_loc = vars.EVENT_ID_MAPPING[vars.EVENT_ID_MAPPING['event_id'] == event_id]
+    return description_loc["description"]
+
+
+def get_event_id_mappings():
+    df = pd.read_csv(vars.EXTERNAL_DIR + "event_id_mapping.csv", delimiter=";")
+
+    # using dictionary to convert specific columns
+    convert_dict = {'event_id': int}
+    df = df.astype(convert_dict)
+    vars.EVENT_ID_MAPPING = df
+
+
 def get_all_event_channels():
     event_channels = set()
-    for item in retrieve_all_events():
-        event_channels.add(item["Event"]["System"]["Channel"])
+    for file_info in json.load(open(vars.TMP_DIR + "files.json", 'r'))["files"]:
+        event_channels.update(list(file_info["event_channel_counts"].keys()))
 
     return list(event_channels)
 

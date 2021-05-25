@@ -35,27 +35,28 @@ def create_filename_summary():
     return table
 
 
-def create_event_summary(event_channel):
-    data = {'event_id': [], 'events': []}
+def create_event_channel_summary(event_channel):
+    data = {'event_id': [], 'events': [], 'description': []}
     event_summary_dict = dict()
+    event_description_list = list()
 
-    for item in utils.retrieve_all_events():
-        item_event_channel = item["Event"]["System"]["Channel"]
-        if event_channel != item_event_channel:
-            continue
+    for file_info in json.load(open(vars.TMP_DIR + "files.json", 'r'))["files"]:
+        for item_event_channel in file_info["event_channel_counts"]:
+            if event_channel != item_event_channel:
+                continue
+            else:
+                for event_id in file_info["event_channel_counts"][item_event_channel].keys():
+                    event_count = file_info["event_channel_counts"][item_event_channel][event_id]
 
-        event_id = item["Event"]["System"]["EventID"]
-
-        if type(event_id) != int:
-            event_id = event_id["#text"]
-
-        if event_id not in event_summary_dict.keys():
-            event_summary_dict[event_id] = 1
-        else:
-            event_summary_dict[event_id] += 1
+                    if event_id not in event_summary_dict.keys():
+                        event_summary_dict[event_id] = event_count
+                        event_description_list.append(utils.get_description_for_event_id(event_id))
+                    else:
+                        event_summary_dict[event_id] += event_count
 
     data['event_id'] = event_summary_dict.keys()
     data['events'] = event_summary_dict.values()
+    data['description'] = event_description_list
 
     df = pd.DataFrame(data, columns=data.keys())
     df.sort_values(by=['events'], inplace=True, ascending=False)

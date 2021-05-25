@@ -4,8 +4,9 @@ import vars
 import dash
 from helpers.evtx_loader import EvtxLoader
 from helpers import utils
-from graphing import table
+from graphing import table, histogram
 import dash_html_components as html
+import dash_core_components as dcc
 
 
 def main():
@@ -30,11 +31,16 @@ def main():
     evtxloader = EvtxLoader(args.evtx)
     evtxloader.load_evtx_files()
 
+    event_histogram = histogram.create_histogram()
     filename_summary_table = table.create_filename_summary()
     event_channels = utils.get_all_event_channels()
 
+    event_id_mappings = utils.get_event_id_mappings()
+
     children = [
         html.H1(children='evtx-hunter'),
+        html.H2(children="Event histogram"),
+        dcc.Graph(figure=event_histogram),
         html.H2(children="File summary"),
         filename_summary_table,
         html.H2(children="Event channel summary"),
@@ -42,7 +48,7 @@ def main():
 
     for event_channel in event_channels:
         if event_channel is not None:
-            event_summary_table = table.create_event_summary(event_channel)
+            event_summary_table = table.create_event_channel_summary(event_channel)
 
             children.append(html.H3(children=event_channel))
             children.append(event_summary_table)
