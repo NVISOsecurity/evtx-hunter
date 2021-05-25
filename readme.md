@@ -10,3 +10,10 @@ pip install -r requirements.txt
 ```
 python evtx_hunter.py <evtx_folder>
 ```
+
+# Credits
+Developed by Daan Raman, NVISO Labs  
+
+## External libraries
+- EVTX Parsing: https://github.com/omerbenamram/EVTX
+
