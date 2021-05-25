@@ -1,3 +1,6 @@
+# Requirements
+Only runs on Windows
+
 # Installation
 ```
 pip install -r requirements.txt
