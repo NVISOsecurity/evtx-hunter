@@ -8,19 +8,18 @@ from helpers import utils
 import dash_table
 import pandas as pd
 import hashlib
+import logging
+import json
 
 
 def create_filename_summary():
-    data = {'filename': [], 'events': []}
-    for filename in os.listdir(vars.TMP_DIR):
-        total_events = 0
-        f = os.path.join(vars.TMP_DIR, filename)
-        with jsonlines.open(f) as reader:
-            for item in reader:
-                total_events += 1
+    logger = logging.getLogger('evtx-hunter')
+    logger.setLevel(logging.DEBUG)
 
-        data['filename'].append(filename)
-        data['events'].append(total_events)
+    data = {'filename': [], 'events': []}
+    for file_info in json.load(open(vars.TMP_DIR + "files.json", 'r'))["files"]:
+        data['filename'].append(file_info['original_filename'])
+        data['events'].append(file_info['total_events'])
 
     df = pd.DataFrame(data, columns=data.keys())
     df.sort_values(by=['events'], inplace=True, ascending=False)

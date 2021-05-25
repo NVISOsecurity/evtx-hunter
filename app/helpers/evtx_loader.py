@@ -1,10 +1,10 @@
 import os
 from helpers import utils
 import logging
-import datetime
 import vars
 import jsonlines
-import time
+import uuid
+import json
 
 
 class EvtxLoader:
@@ -15,21 +15,36 @@ class EvtxLoader:
         self.logger.setLevel(logging.DEBUG)
 
     def load_evtx_files(self):
+        summary_dict = dict({"files": []})
+
         evtx_filenames = utils.get_recursive_filenames(self.file_path, ".evtx")
 
         for filename in evtx_filenames:
             total_events = 0
 
             self.logger.info("processing " + filename)
-            basename = os.path.basename(filename)
-            output_filename = vars.TMP_DIR + basename + ".json"
+            tmp_filename = str(uuid.uuid4())
+            output_filename = vars.TMP_DIR + "/evtx_dump/" + tmp_filename + ".json"
 
             # Convert evtx file to JSON
             os.system(vars.EXTERNAL_DIR + vars.EVTX_DUMP_EXE + " -o jsonl \"" + filename + "\" -f "
                       + "\"" + output_filename + "\"")
 
-            with jsonlines.open(output_filename, "r") as reader:
-                for obj in reader:
-                    total_events += 1
+            try:
+                with jsonlines.open(output_filename, "r") as reader:
+                    for obj in reader:
+                        total_events += 1
+            except OSError:
+                logging.error("Could not load " + filename + ". This could be caused by your Anti-Virus " \
+                                                             "detecting it as malicious!")
+                continue
+
+            # Add the file to the summary dictionary
+            tmp_file_dict = {"original_filename": filename, "json_dump_filename": output_filename,
+                             "total_events": total_events}
+            summary_dict["files"].append(tmp_file_dict)
 
             self.logger.info("processed " + str(total_events) + " events")
+
+        with open(vars.TMP_DIR + "files.json", "w") as outfile:
+            json.dump(summary_dict, outfile, indent=4)

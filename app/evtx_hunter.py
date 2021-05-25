@@ -6,7 +6,6 @@ from helpers.evtx_loader import EvtxLoader
 from helpers import utils
 from graphing import table
 import dash_html_components as html
-import dash_core_components as dcc
 
 
 def main():

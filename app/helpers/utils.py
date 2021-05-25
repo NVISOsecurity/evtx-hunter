@@ -3,12 +3,12 @@ import glob
 import logging
 import jsonlines
 import vars
+import json
 
 
 def retrieve_all_events():
-    for filename in os.listdir(vars.TMP_DIR):
-        f = os.path.join(vars.TMP_DIR, filename)
-        with jsonlines.open(f) as reader:
+    for file_info in json.load(open(vars.TMP_DIR + "files.json", 'r'))["files"]:
+        with jsonlines.open(file_info["json_dump_filename"]) as reader:
             for item in reader:
                 yield item
 
@@ -34,7 +34,7 @@ def get_recursive_filenames(path, file_suffix):
 
 
 def remove_all_tmp_json_files():
-    files = glob.glob(vars.TMP_DIR + "*.json")
+    files = glob.glob(vars.TMP_DIR + "/evtx_dump/*.json")
     for f in files:
         os.remove(f)
 
