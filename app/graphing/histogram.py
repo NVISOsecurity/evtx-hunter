@@ -26,6 +26,6 @@ def create_histogram():
         data["total"].append(1)
 
     df = pd.DataFrame(data, columns=data.keys())
-    fig = px.histogram(df, x="date", y="total", histfunc="count", title="Histogram of all events")
+    fig = px.histogram(df, x="date", y="total", histfunc="count", title="all events")
 
     return fig

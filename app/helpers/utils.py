@@ -7,6 +7,69 @@ import json
 import pandas as pd
 
 
+def create_log_fields_string(event, log_fields):
+    output_strings = list()
+    for field in log_fields:
+        if field in event["Event"]["EventData"]:
+            output_strings.append(field + ":" + event["Event"]["EventData"][field])
+
+    return "\n\n".join(output_strings)
+
+
+def dict_flatten(in_dict, dict_out=None, parent_key=None, separator="."):
+    if dict_out is None:
+        dict_out = {}
+
+    for k, v in in_dict.items():
+        k = f"{parent_key}{separator}{k}" if parent_key else k
+        if isinstance(v, dict):
+            dict_flatten(in_dict=v, dict_out=dict_out, parent_key=k)
+            continue
+
+        dict_out[k] = v
+
+    return dict_out
+
+
+def normalize_event(event):
+    flattened_dict = dict_flatten(event)
+
+    event_id = event["Event"]["System"]["EventID"]
+    if type(event_id) != int:
+        event["Event"]["System"]["EventID"] = event_id["#text"]
+
+    if "EventData" not in event["Event"].keys() or event["Event"]["EventData"] is None:
+        event["Event"]["EventData"] = dict()
+
+    for k in event["Event"]["System"].keys():
+        event["Event"]["EventData"][k] = event["Event"]["System"][k]
+
+    for k in event["Event"].keys():
+        if k != "EventData":
+            event["Event"]["EventData"][k] = event["Event"][k]
+
+    if "UserData" in event["Event"].keys():
+        for k in event["Event"]["UserData"].keys():
+            event["Event"]["EventData"][k] = dict()
+            for k_ in event["Event"]["UserData"][k].keys():
+                event["Event"]["EventData"][k][k_] = event["Event"]["UserData"][k][k_]
+
+    for k, v in flattened_dict.items():
+        event["Event"]["EventData"][k.split(".")[-1]] = v
+
+    return event
+
+
+def retrieve_all_occurence_rules():
+    for rule_info in json.load(open(vars.RULE_DIR + "interesting_events.json", 'r'))["rules"]:
+        yield rule_info
+
+
+def retrieve_all_first_occurence_rules():
+    for rule_info in json.load(open(vars.RULE_DIR + "first_occurence.json", 'r'))["rules"]:
+        yield rule_info
+
+
 def retrieve_all_events():
     for file_info in json.load(open(vars.TMP_DIR + "files.json", 'r'))["files"]:
         with jsonlines.open(file_info["json_dump_filename"]) as reader:
@@ -17,10 +80,10 @@ def retrieve_all_events():
 def get_description_for_event_id(event_id):
     event_id = int(event_id)
     description_loc = vars.EVENT_ID_MAPPING[vars.EVENT_ID_MAPPING['event_id'] == event_id]
-    return description_loc["description"]
+    return ', '.join(description_loc["description"].tolist())
 
 
-def get_event_id_mappings():
+def load_event_id_mappings():
     df = pd.read_csv(vars.EXTERNAL_DIR + "event_id_mapping.csv", delimiter=";")
 
     # using dictionary to convert specific columns
