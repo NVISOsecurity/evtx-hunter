@@ -4,6 +4,9 @@
 It can process a high number of events quickly, making it suitable for use during investigations and hunting
 activities across a high number of collected events.
 
+![Report header](/documentation/screenshots/report_header.PNG)
+![Example of a first time detection](/documentation/screenshots/first_time_example.PNG)
+
 # What is evtx-hunter
 
 evtx-hunter is a Python tool that generates a web report of interesting activity observed
@@ -57,11 +60,6 @@ using it during incidents where EVTX files require investigation:
 - Add new rules to spot new interesting activity in EVTX files;
 - Improve how the information is presented in the resulting report;
 - Make the reports interactive (live filtering & searching for example).
-
-# Screenshots
-
-![Report header](/documentation/screenshots/report_header.PNG)
-![Example of a first time detection](/documentation/screenshots/first_time_example.PNG)
 
 # Contributions
 Everyone is invited to contribute! 
