@@ -1,6 +1,7 @@
 # Introduction
 
-![](/documentation/screenshots/report_header.PNG)
+![Report header](/documentation/screenshots/report_header.PNG)
+![Example of a first time detection](/documentation/screenshots/first_time_example.PNG)
 
 # What is evtx-hunter
 
