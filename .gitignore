@@ -141,3 +141,6 @@ cython_debug/
 *.json
 
 *.pyc
+
+# Remove pycharm project folder
+.idea/
