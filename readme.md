@@ -1,5 +1,5 @@
 # Introduction
-**evtx-hunter helps to quickly spot interesting activity in Windows Event Viewer (EVTX) files.**
+**evtx-hunter helps to quickly spot interesting security-related activity in Windows Event Viewer (EVTX) files.**
 
 It can process a high number of events quickly, making it suitable for use during investigations and hunting
 activities across a high number of collected events.
