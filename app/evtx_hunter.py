@@ -20,7 +20,7 @@ def main():
     vars.RULE_DIR = vars.PROJECT_ROOT_DIR + "/../rules/"
 
     parser = argparse.ArgumentParser(description="Dump a binary EVTX file into XML.")
-    parser.add_argument("evtx", type=str,
+    parser.add_argument("evtx_folder", type=str,
                         help="Path to the Windows EVTX event log file folder")
 
     args = parser.parse_args()
@@ -32,10 +32,10 @@ def main():
     utils.remove_all_tmp_json_files()
     utils.load_event_id_mappings()
 
-    evtxloader = EvtxLoader(args.evtx)
+    evtxloader = EvtxLoader(args.evtx_folder)
     evtxloader.load_evtx_files()
 
-    logger.info("generating graphs and models")
+    logger.info("generating graphs and building models, this can take a while")
 
     event_histogram = histogram.create_histogram()
     filename_summary_table = table.create_filename_summary_table()
