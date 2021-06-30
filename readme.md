@@ -73,3 +73,6 @@ Developed by Daan Raman, [@NVISO_labs](https://twitter.com/nviso_labs)
 ## External libraries
 - EVTX Parsing: https://github.com/omerbenamram/EVTX
 
+## License
+evtx-hunter is released under the GNU GENERAL PUBLIC LICENSE v3 (GPL-3).
+[LICENSE](LICENSE)
