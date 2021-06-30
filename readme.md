@@ -1,5 +1,8 @@
 # Introduction
-evtx-hunter helps to quickly spot interesting activity in Windows Event Viewer (EVTX) files.
+**evtx-hunter helps to quickly spot interesting activity in Windows Event Viewer (EVTX) files.**
+
+It can process a high number of events quickly, making it suitable for use during investigations and hunting
+activities across a high number of collected events.
 
 # What is evtx-hunter
 
@@ -7,18 +10,18 @@ evtx-hunter is a Python tool that generates a web report of interesting activity
 in EVTX files. The tool comes with a few predefined rules to help you get going. This includes
 rules to spot for example:
 - The first time a certain DNS domain is queried;
-- The first time a process is launched;
+- The first time a certain process is launched;
 - New service installations;
 - User account lockouts;
 - ...
 
 New use cases can easily be added to support your use case:
-- ``rules/first_occurence.json``: monitor the first time something happens that matches the rule, such as a certain service being
-installed or a compromised user account being used.
+- ``rules/first_occurence.json``: monitor the first time something happens that matches the rule, such as installing
+  a new (malicious) service or using a compromised user account.
 
   
-- ``rules/interesting_events.json``: monitor each time something happens that matches the rule, such as the audit
-log being cleared or a new service being instakked.
+- ``rules/interesting_events.json``: monitor each time something happens that matches the rule, such as clearing 
+  the audit log or installing a new service.
 
 
 # Why evtx-hunter?
