@@ -1,0 +1,34 @@
+{
+    "rules": [
+        {
+            "rule_name": "First time observing DNS queries",
+            "event_channel": "Microsoft-Windows-Sysmon/Operational",
+            "monitored_field": "QueryName",
+            "log_fields": ["QueryName"],
+            "log_full_event":  false,
+            "event_filter": {
+                "EventID": 22
+            }
+        },
+        {
+            "rule_name": "First time observing processes",
+            "event_channel": "Microsoft-Windows-Sysmon/Operational",
+            "monitored_field": "Image",
+            "log_fields": ["Image"],
+            "log_full_event":  false,
+            "event_filter": {
+                "EventID": 1
+            }
+        },
+        {
+            "rule_name": "First time observing failed logon",
+            "event_channel": "Security",
+            "monitored_field": "TargetUserName",
+            "log_fields": ["Computer", "SubjectDomainName", "SubjectUserName","TargetDomainName", "TargetUserName"],
+            "log_full_event":  false,
+            "event_filter": {
+                "EventID": 4625
+            }
+        }
+    ]
+}

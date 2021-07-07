@@ -1,0 +1,31 @@
+{
+    "rules": [
+        {
+            "rule_name": "Audit log cleared",
+            "event_channel": "Security",
+            "log_full_event": false,
+            "log_fields": ["Computer", "SubjectDomainName", "SubjectUserName"],
+            "event_filter": {
+                "EventID": 1102
+            }
+        },
+        {
+            "rule_name": "New service installed",
+            "event_channel": "System",
+            "log_fields": ["ImagePath", "Computer"],
+            "log_full_event": false,
+            "event_filter": {
+                "EventID": 7045
+            }
+        },
+        {
+            "rule_name": "A user account was locked out",
+            "event_channel": "Security",
+            "log_full_event": false,
+            "log_fields": ["Computer", "SubjectDomainName", "SubjectUserName","TargetDomainName", "TargetUserName"],
+            "event_filter": {
+                "EventID": 4740
+            }
+        }
+    ]
+}
