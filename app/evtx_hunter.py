@@ -15,6 +15,9 @@ def main():
     logger.info("started evtx-hunter")
 
     vars.PROJECT_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    utils.set_cygwin_vars()
+
     vars.TMP_DIR = vars.PROJECT_ROOT_DIR + "/../tmp/"
     vars.EXTERNAL_DIR = vars.PROJECT_ROOT_DIR + "/../external/"
     vars.RULE_DIR = vars.PROJECT_ROOT_DIR + "/../rules/"

@@ -5,6 +5,7 @@ import jsonlines
 import vars
 import json
 import pandas as pd
+import platform
 
 
 def create_log_fields_string(event, log_fields):
@@ -141,3 +142,39 @@ def setup_logger():
 def sort_dict(_dict, reverse=False):
     event_summary_list = sorted(_dict.items(), key=lambda x: x[1], reverse=reverse)
     return dict(event_summary_list)
+
+
+def is_cygwin():
+    return platform.system().startswith("CYGWIN")
+
+
+def is_64_bit():
+    return os.uname().machine == "x86_64"
+
+
+def get_cygwin_root():
+    return "/cygwin" + ("64/" if is_64_bit() else "/")
+
+
+def set_cygwin_vars():
+    if is_cygwin():
+        vars.CYGWIN = True
+        vars.CYGWIN_DIR = get_cygwin_root()
+        vars.CYGDRIVE_DIR = "/cygdrive/"
+    else:
+        vars.CYGWIN = False
+
+
+def evtx_dump_input(filename):
+    if vars.CYGWIN and filename.startswith(vars.CYGDRIVE_DIR):
+        filename = filename[11:]
+    return filename
+
+
+def evtx_dump_output(filename):
+    if vars.CYGWIN:
+        if vars.PROJECT_ROOT_DIR.startswith(vars.CYGDRIVE_DIR) and vars.TMP_DIR.startswith(vars.PROJECT_ROOT_DIR):
+            filename = filename[11:]
+        else:
+            filename = vars.CYGWIN_DIR + filename
+    return filename
