@@ -165,16 +165,18 @@ def set_cygwin_vars():
         vars.CYGWIN = False
 
 
-def evtx_dump_input(filename):
-    if vars.CYGWIN and filename.startswith(vars.CYGDRIVE_DIR):
-        filename = filename[11:]
-    return filename
-
-
-def evtx_dump_output(filename):
+# Forwards the original path or corrects it for Cygwin
+def path_for_exe(path):
+    # Path from Cygwin must be corrected before it can be used with .exe
     if vars.CYGWIN:
-        if vars.PROJECT_ROOT_DIR.startswith(vars.CYGDRIVE_DIR) and vars.TMP_DIR.startswith(vars.PROJECT_ROOT_DIR):
-            filename = filename[11:]
+        # Ensures that the path is absolute 
+        path = os.path.abspath(path)
+        # Path leads to a place within Windows filesystem
+        if path.startswith(vars.CYGDRIVE_DIR):
+            # Deletes the cygrdive prefix and the drive letter
+            path = path[11:]
+        # Path leads to a place within Linux filesystem
         else:
-            filename = vars.CYGWIN_DIR + filename
-    return filename
+            # Adds the Cygwin prefix so .exe can reach the place
+            path = vars.CYGWIN_DIR + path
+    return path

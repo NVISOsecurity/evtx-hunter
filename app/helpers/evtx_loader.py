@@ -26,8 +26,8 @@ class EvtxLoader:
             output_filename = vars.TMP_DIR + "/evtx_dump/" + tmp_filename + ".json"
 
             # Convert evtx file to JSON
-            os.system(vars.EXTERNAL_DIR + vars.EVTX_DUMP_EXE + " -o jsonl \"" + utils.evtx_dump_input(filename) + "\" -f "
-                      + "\"" + utils.evtx_dump_output(output_filename) + "\"")
+            os.system(vars.EXTERNAL_DIR + vars.EVTX_DUMP_EXE + " -o jsonl \"" + utils.path_for_exe(filename) + "\" -f "
+                      + "\"" + utils.path_for_exe(output_filename) + "\"")
 
             event_counts = dict()
             try:
