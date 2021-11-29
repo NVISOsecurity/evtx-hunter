@@ -5,6 +5,7 @@ import jsonlines
 import vars
 import json
 import pandas as pd
+import platform
 
 
 def create_log_fields_string(event, log_fields):
@@ -141,3 +142,41 @@ def setup_logger():
 def sort_dict(_dict, reverse=False):
     event_summary_list = sorted(_dict.items(), key=lambda x: x[1], reverse=reverse)
     return dict(event_summary_list)
+
+
+def is_cygwin():
+    return platform.system().startswith("CYGWIN")
+
+
+def is_64_bit():
+    return os.uname().machine == "x86_64"
+
+
+def get_cygwin_root():
+    return "/cygwin" + ("64/" if is_64_bit() else "/")
+
+
+def set_cygwin_vars():
+    if is_cygwin():
+        vars.CYGWIN = True
+        vars.CYGWIN_DIR = get_cygwin_root()
+        vars.CYGDRIVE_DIR = "/cygdrive/"
+    else:
+        vars.CYGWIN = False
+
+
+# Forwards the original path or corrects it for Cygwin
+def path_for_exe(path):
+    # Path from Cygwin must be corrected before it can be used with .exe
+    if vars.CYGWIN:
+        # Ensures that the path is absolute 
+        path = os.path.abspath(path)
+        # Path leads to a place within Windows filesystem
+        if path.startswith(vars.CYGDRIVE_DIR):
+            # Deletes the cygrdive prefix and the drive letter
+            path = path[11:]
+        # Path leads to a place within Linux filesystem
+        else:
+            # Adds the Cygwin prefix so .exe can reach the place
+            path = vars.CYGWIN_DIR + path
+    return path
